@@ -1,0 +1,11 @@
+<mat-toolbar color="primary">
+  <span>TurboVets Task Manager</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="toggleTheme()">
+    <mat-icon>{{ (isDarkTheme$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="app-container" [class.dark-theme]="isDarkTheme$ | async">
+  <app-task-board></app-task-board>
+</div>

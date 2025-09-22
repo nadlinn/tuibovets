@@ -1,0 +1,85 @@
+<div class="task-board">
+  <div class="task-board__header">
+    <h1>Task Board</h1>
+    <button mat-raised-button color="primary" (click)="onTaskSelect('')">
+      <mat-icon>add</mat-icon>
+      New Task
+    </button>
+  </div>
+
+  <div *ngIf="loading$ | async" class="task-board__loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="error$ | async as error" class="task-board__error">
+    <mat-error>{{ error }}</mat-error>
+  </div>
+
+  <div class="task-board__content" *ngIf="tasksByStatus$ | async as tasksByStatus">
+    <div
+      class="task-board__column"
+      *ngFor="let status of TaskStatus | keyvalue"
+      [id]="status.value"
+    >
+      <div class="task-board__column-header">
+        <h2>{{ getStatusLabel(status.value) }}</h2>
+        <span class="task-count">{{ tasksByStatus[status.value].length }}</span>
+      </div>
+
+      <div
+        class="task-board__column-content"
+        cdkDropList
+        [cdkDropListData]="tasksByStatus[status.value]"
+        [id]="status.value"
+        [cdkDropListConnectedTo]="Object.values(TaskStatus)"
+        (cdkDropListDropped)="onDrop($event)"
+      >
+        <mat-card
+          *ngFor="let task of tasksByStatus[status.value]"
+          class="task-card"
+          [ngClass]="'priority-' + task.priority"
+          cdkDrag
+          [cdkDragData]="task"
+          (click)="onTaskSelect(task.id)"
+        >
+          <div class="task-card__drag-placeholder" *cdkDragPlaceholder></div>
+          <mat-card-header>
+            <mat-card-title>{{ task.title }}</mat-card-title>
+            <mat-card-subtitle>
+              <mat-icon [ngClass]="'priority-' + task.priority">flag</mat-icon>
+              {{ task.priority | titlecase }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p>{{ task.description }}</p>
+            <div class="task-card__due-date" *ngIf="task.dueDate">
+              <mat-icon>event</mat-icon>
+              {{ task.dueDate | date }}
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="statusMenu"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #statusMenu="matMenu">
+              <button
+                mat-menu-item
+                *ngFor="let newStatus of TaskStatus | keyvalue"
+                (click)="onTaskStatusChange(task, newStatus.value)"
+                [disabled]="task.status === newStatus.value"
+              >
+                Move to {{ getStatusLabel(newStatus.value) }}
+              </button>
+            </mat-menu>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.app-container {
+  height: calc(100vh - 64px);
+  background-color: var(--app-bg, #ffffff);
+  color: var(--text-primary, rgba(0, 0, 0, 0.87));
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &.dark-theme {
+    --app-bg: #1d1d1d;
+    --text-primary: rgba(255, 255, 255, 0.87);
+  }
+}
